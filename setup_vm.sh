@@ -102,8 +102,6 @@ DB_NAME=financeiro_db
 SESSION_SECRET=financeiro_secret_key_2024
 PORT=3000
 
-EMAIL_USER=lari.trasel6854@gmail.com
-EMAIL_PASS=lekd bzwd qvbc jyeg
 EOF
     fi
 
