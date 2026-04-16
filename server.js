@@ -42,12 +42,24 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'register.html'));
+});
+
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// Iniciar servidor
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Servidor rodando em http://0.0.0.0:${PORT}`);
-  console.log(`📊 Dashboard: http://0.0.0.0:${PORT}/dashboard`);
+app.get('/usuarios', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'usuarios.html'));
 });
+
+// Iniciar servidor somente se não for um teste
+if (require.main === module) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Servidor rodando em http://0.0.0.0:${PORT}`);
+    console.log(`📊 Dashboard: http://0.0.0.0:${PORT}/dashboard`);
+  });
+}
+
+module.exports = app;

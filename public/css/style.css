@@ -621,6 +621,97 @@ body {
   to { opacity: 0; transform: translateY(-10px); }
 }
 
+/* ===== DATE FILTER & EXPORT BUTTONS ===== */
+.date-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.date-filter-field {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.date-filter-field label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.filter-date-input {
+  padding: 0.375rem 0.5rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  max-width: 145px;
+}
+
+.filter-date-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.btn-sm {
+  padding: 0.375rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.btn-export {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--accent-light);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(167, 139, 250, 0.12));
+  color: var(--accent-primary);
+}
+
+.btn-export:hover {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.16), rgba(167, 139, 250, 0.22));
+  border-color: var(--accent-primary);
+  box-shadow: 0 2px 8px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.btn-export:active {
+  transform: translateY(0);
+}
+
+.btn-pdf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: transparent;
+  color: var(--accent-light);
+}
+
+.btn-pdf:hover {
+  background: var(--accent-bg);
+  color: var(--accent-primary);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .summary-cards { grid-template-columns: 1fr; }
@@ -628,5 +719,9 @@ body {
   .form-row { grid-template-columns: 1fr; }
   .table-header { flex-direction: column; align-items: flex-start; }
   .table-header-actions { width: 100%; flex-wrap: wrap; }
+  .date-filter-group { width: 100%; flex-wrap: wrap; }
+  .date-filter-field { flex: 1; min-width: 120px; }
+  .filter-date-input { width: 100%; max-width: none; }
+  .btn-export { width: 100%; justify-content: center; }
   .user-info span { display: none; }
 }

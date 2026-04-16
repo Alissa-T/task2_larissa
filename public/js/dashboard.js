@@ -1,4 +1,4 @@
-// Dashboard Page Logic — only Lançamentos
+// Dashboard Page Logic — Lançamentos with Date Filter + PDF Export (Server-Side)
 document.addEventListener('DOMContentLoaded', async () => {
   // Verificar sessão
   try {
@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const btnNovoLancamento = document.getElementById('btn-novo-lancamento');
   const filterTipo = document.getElementById('filter-tipo');
+  const filterDataInicio = document.getElementById('filter-data-inicio');
+  const filterDataFim = document.getElementById('filter-data-fim');
+  const btnLimparDatas = document.getElementById('btn-limpar-datas');
+  const btnExportarTodosPdf = document.getElementById('btn-exportar-todos-pdf');
 
   // Logout
   document.getElementById('logout-btn').addEventListener('click', async () => {
@@ -48,14 +52,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // ===== LANÇAMENTOS =====
+  // ===== FILTROS =====
   filterTipo.addEventListener('change', () => renderLancamentos());
+  filterDataInicio.addEventListener('change', () => renderLancamentos());
+  filterDataFim.addEventListener('change', () => renderLancamentos());
+  btnLimparDatas.addEventListener('click', () => {
+    filterDataInicio.value = '';
+    filterDataFim.value = '';
+    renderLancamentos();
+  });
+
+  function getFilteredLancamentos() {
+    const filterType = filterTipo.value;
+    const dataInicio = filterDataInicio.value;
+    const dataFim = filterDataFim.value;
+
+    let filtered = lancamentos;
+
+    if (filterType) {
+      filtered = filtered.filter((l) => l.tipo_lancamento === filterType);
+    }
+
+    if (dataInicio) {
+      filtered = filtered.filter((l) => {
+        const dataLanc = l.data_lancamento.split('T')[0];
+        return dataLanc >= dataInicio;
+      });
+    }
+
+    if (dataFim) {
+      filtered = filtered.filter((l) => {
+        const dataLanc = l.data_lancamento.split('T')[0];
+        return dataLanc <= dataFim;
+      });
+    }
+
+    return filtered;
+  }
 
   function renderLancamentos() {
-    const filter = filterTipo.value;
-    const filtered = filter
-      ? lancamentos.filter((l) => l.tipo_lancamento === filter)
-      : lancamentos;
+    const filtered = getFilteredLancamentos();
 
     const tbody = document.getElementById('lancamentos-table-body');
     tbody.innerHTML = '';
@@ -77,6 +113,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         <td><span class="badge badge-${l.tipo_lancamento}">${l.tipo_lancamento}</span></td>
         <td>
           <div class="actions-cell">
+            <button class="btn-pdf" onclick="exportPdfIndividual(${l.id})" title="Exportar PDF">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z" fill="currentColor"/>
+              </svg>
+            </button>
             <button class="btn-edit" onclick="editLancamento(${l.id})" title="Editar">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
@@ -93,6 +134,75 @@ document.addEventListener('DOMContentLoaded', async () => {
       tbody.appendChild(tr);
     });
   }
+
+  // ===== PDF EXPORT - Individual (chamada ao servidor) =====
+  window.exportPdfIndividual = async function (id) {
+    try {
+      const response = await fetch(`/api/lancamentos/exportar/${id}`, {
+        credentials: 'same-origin',
+      });
+      if (!response.ok) {
+        showToast('Erro ao gerar PDF', 'error');
+        return;
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lancamento_${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('PDF do lançamento exportado!', 'success');
+    } catch (error) {
+      showToast('Erro ao gerar PDF', 'error');
+    }
+  };
+
+  // ===== PDF EXPORT - Todos (chamada ao servidor) =====
+  btnExportarTodosPdf.addEventListener('click', async () => {
+    const filtered = getFilteredLancamentos();
+    if (filtered.length === 0) {
+      showToast('Nenhum lançamento para exportar', 'error');
+      return;
+    }
+
+    // Construir a URL com os filtros aplicados
+    const params = new URLSearchParams();
+    const tipo = filterTipo.value;
+    const dataInicio = filterDataInicio.value;
+    const dataFim = filterDataFim.value;
+
+    if (tipo) params.append('tipo', tipo);
+    if (dataInicio) params.append('dataInicio', dataInicio);
+    if (dataFim) params.append('dataFim', dataFim);
+
+    const queryString = params.toString();
+    const url = `/api/lancamentos/exportar/todos${queryString ? '?' + queryString : ''}`;
+
+    try {
+      const response = await fetch(url, {
+        credentials: 'same-origin',
+      });
+      if (!response.ok) {
+        showToast('Erro ao gerar PDF', 'error');
+        return;
+      }
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = 'lancamentos_financeiros.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+      showToast('PDF de todos os lançamentos exportado!', 'success');
+    } catch (error) {
+      showToast('Erro ao gerar PDF', 'error');
+    }
+  });
 
   // Novo Lançamento
   btnNovoLancamento.addEventListener('click', () => openLancamentoModal());

@@ -40,6 +40,13 @@ const API = {
     });
   },
 
+  async registrarUsuario(dados) {
+    return this.request('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(dados),
+    });
+  },
+
   async verificarSessao() {
     return this.request('/api/auth/sessao');
   },

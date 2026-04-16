@@ -49,9 +49,19 @@ async function seed() {
         nome VARCHAR(100) NOT NULL,
         login VARCHAR(50) UNIQUE NOT NULL,
         senha VARCHAR(255) NOT NULL,
+        email VARCHAR(150),
         situacao VARCHAR(20) DEFAULT 'ativo'
       );
     `);
+
+    // Adicionar coluna email se não existir (para bases já criadas)
+    await pool.query(`
+      DO $$ BEGIN
+        ALTER TABLE usuario ADD COLUMN IF NOT EXISTS email VARCHAR(150);
+      EXCEPTION WHEN duplicate_column THEN NULL;
+      END $$;
+    `);
+
     console.log('✅ Tabela "usuario" criada/verificada.');
 
     await pool.query(`
@@ -70,10 +80,10 @@ async function seed() {
     const senhaHash = await bcrypt.hash('admin123', 10);
 
     await pool.query(`
-      INSERT INTO usuario (nome, login, senha, situacao)
-      VALUES ($1, $2, $3, 'ativo')
-      ON CONFLICT (login) DO UPDATE SET senha = $3
-    `, ['Administrador', 'admin', senhaHash]);
+      INSERT INTO usuario (nome, login, senha, email, situacao)
+      VALUES ($1, $2, $3, $4, 'ativo')
+      ON CONFLICT (login) DO UPDATE SET senha = $3, email = $4
+    `, ['Administrador', 'admin', senhaHash, 'admin@financeiro.com']);
     console.log('✅ Usuário "admin" criado/atualizado. Senha: admin123');
 
     // 5. Popular tabela lancamento com 10 registros

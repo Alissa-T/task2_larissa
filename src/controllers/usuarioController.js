@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const listar = async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, nome, login, situacao FROM usuario WHERE situacao = $1 ORDER BY nome',
+      'SELECT id, nome, login, email, situacao FROM usuario WHERE situacao = $1 ORDER BY nome',
       ['ativo']
     );
     res.json(result.rows);
@@ -18,10 +18,10 @@ const listar = async (req, res) => {
 // Criar novo usuário
 const criar = async (req, res) => {
   try {
-    const { nome, login, senha } = req.body;
+    const { nome, login, senha, email } = req.body;
 
-    if (!nome || !login || !senha) {
-      return res.status(400).json({ error: 'Nome, login e senha são obrigatórios' });
+    if (!nome || !login || !senha || !email) {
+      return res.status(400).json({ error: 'Nome, login, senha e email são obrigatórios' });
     }
 
     // Verificar se login já existe
@@ -30,12 +30,18 @@ const criar = async (req, res) => {
       return res.status(400).json({ error: 'Login já está em uso' });
     }
 
+    // Verificar se email já existe
+    const existingEmail = await pool.query("SELECT id FROM usuario WHERE email = $1 AND situacao = 'ativo'", [email]);
+    if (existingEmail.rows.length > 0) {
+      return res.status(400).json({ error: 'Email já está em uso' });
+    }
+
     const senhaHash = await bcrypt.hash(senha, 10);
 
     const result = await pool.query(
-      `INSERT INTO usuario (nome, login, senha, situacao)
-       VALUES ($1, $2, $3, 'ativo') RETURNING id, nome, login, situacao`,
-      [nome, login, senhaHash]
+      `INSERT INTO usuario (nome, login, senha, email, situacao)
+       VALUES ($1, $2, $3, $4, 'ativo') RETURNING id, nome, login, email, situacao`,
+      [nome, login, senhaHash, email]
     );
 
     res.status(201).json(result.rows[0]);
@@ -49,21 +55,21 @@ const criar = async (req, res) => {
 const atualizar = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nome, login, senha } = req.body;
+    const { nome, login, senha, email } = req.body;
 
-    if (!nome || !login) {
-      return res.status(400).json({ error: 'Nome e login são obrigatórios' });
+    if (!nome || !login || !email) {
+      return res.status(400).json({ error: 'Nome, login e email são obrigatórios' });
     }
 
     let query, params;
 
     if (senha) {
       const senhaHash = await bcrypt.hash(senha, 10);
-      query = `UPDATE usuario SET nome = $1, login = $2, senha = $3 WHERE id = $4 AND situacao = 'ativo' RETURNING id, nome, login, situacao`;
-      params = [nome, login, senhaHash, id];
+      query = `UPDATE usuario SET nome = $1, login = $2, senha = $3, email = $4 WHERE id = $5 AND situacao = 'ativo' RETURNING id, nome, login, email, situacao`;
+      params = [nome, login, senhaHash, email, id];
     } else {
-      query = `UPDATE usuario SET nome = $1, login = $2 WHERE id = $3 AND situacao = 'ativo' RETURNING id, nome, login, situacao`;
-      params = [nome, login, id];
+      query = `UPDATE usuario SET nome = $1, login = $2, email = $3 WHERE id = $4 AND situacao = 'ativo' RETURNING id, nome, login, email, situacao`;
+      params = [nome, login, email, id];
     }
 
     const result = await pool.query(query, params);
@@ -83,6 +89,11 @@ const atualizar = async (req, res) => {
 const excluir = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Não permitir excluir o próprio usuário
+    if (req.session && req.session.usuario && req.session.usuario.id === parseInt(id)) {
+      return res.status(400).json({ error: 'Você não pode excluir seu próprio usuário' });
+    }
 
     const result = await pool.query(
       `UPDATE usuario SET situacao = 'inativo' WHERE id = $1 AND situacao = 'ativo' RETURNING *`,

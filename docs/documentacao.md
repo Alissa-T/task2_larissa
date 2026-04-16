@@ -1,6 +1,13 @@
 # Documentação — Sistema Financeiro (Registro de Despesas e Receitas)
 
 ---
+## Dados de acesso
+
+Link de acesso à aplicação na VM: `http://177.44.248.108:3000/dashboard` <br>
+Credenciais: Login `admin` / Senha `admin123` <br>
+Acesso repositorio Github: `https://github.com/Alissa-T/task2_larissa#`
+
+---
 
 ## 1. Sobre a Aplicação
 
@@ -149,25 +156,7 @@ CREATE TABLE lancamento (
 | 9 | Rendimento investimentos | 20/03/2026 | 185,75 | Receita |
 | 10 | Manutenção do carro | 22/03/2026 | 530,00 | Despesa |
 
----
-
-### 1.4 Interface Desenvolvida
-
-#### Tela de Login
-
-Interface simples e limpa para autenticação do usuário.
-
-![Tela de Login](tela_login.png)
-
-#### Tela de Lançamentos
-
-Tela principal com cards de resumo financeiro e tabela de lançamentos com ações de editar/excluir.
-
-![Tela de Lançamentos](tela_lancamentos.png)
-
----
-
-### 1.5 Endpoints da API
+### 1.4 Endpoints da API
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
@@ -185,25 +174,9 @@ Tela principal com cards de resumo financeiro e tabela de lançamentos com açõ
 
 ## 2. Publicação na VM
 
-### 2.1 Como Acessar a VM
+### 2.1 Instalação de Ferramentas na VM
 
-> **Nota:** Preencher com os dados da sua VM.
-
-- **Provedor:** (Ex: Azure, AWS, Google Cloud, etc.)
-- **IP da VM:** `<IP_DA_VM>`
-- **Acesso:** SSH
-  ```bash
-  ssh usuario@<IP_DA_VM>
-  ```
-- **Credenciais:**
-  - Usuário: `<usuario_vm>`
-  - Senha: `<senha_vm>` (ou chave SSH)
-
----
-
-### 2.2 Instalação de Ferramentas na VM
-
-#### 2.2.1 Atualizar o sistema (Ubuntu/Debian)
+#### 2.1.1 Atualizar o sistema (Ubuntu/Debian)
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -244,7 +217,6 @@ ALTER USER postgres WITH PASSWORD 'postgres';
 ```bash
 sudo apt install -y git
 ```
-
 ---
 
 ### 2.3 Implantação da Aplicação
@@ -301,7 +273,6 @@ pm2 startup
 ```bash
 sudo ufw allow 3000
 ```
-
 ---
 
 ### 2.4 URL de Acesso
@@ -317,11 +288,11 @@ sudo ufw allow 3000
 
 | Etapa | Tempo Estimado |
 |-------|---------------|
-| Desenvolvimento da aplicação (backend + frontend) | 45 min |
-| Criação do ambiente na VM (instalação de ferramentas) | 15 min |
-| Publicação da aplicação na VM | 10 min |
-| Documentação | 10 min |
-| **Total** | **~80 min** |
+| Desenvolvimento da aplicação (backend + frontend) | 120 min |
+| Criação do ambiente na VM (instalação de ferramentas) | 30 min |
+| Publicação da aplicação na VM | 15 min |
+| Documentação | 15 min |
+| **Total** | **~180 min** |
 
 ---
 
@@ -336,12 +307,3 @@ sudo ufw allow 3000
 | express-session | 1.18 | Gerenciamento de sessão |
 | pg | 8.13 | Driver PostgreSQL para Node.js |
 | HTML5/CSS3/JS | - | Frontend |
-
----
-
-## 5. Entrega
-
-- [x] Documentação completa (este arquivo)
-- [ ] Link de acesso à aplicação na VM: `http://<IP_DA_VM>:3000`
-- [ ] Credenciais: Login `admin` / Senha `admin123`
-- [ ] Link do repositório GitHub: `<URL_DO_REPOSITORIO>`

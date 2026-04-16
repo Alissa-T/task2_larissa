@@ -1,4 +1,19 @@
 const pool = require('../config/database');
+const emailService = require('../utils/emailService');
+const { templateCriacao, templateEdicao, templateExclusao } = require('../utils/emailTemplate');
+
+const sendLancamentoEmail = async (userId, subject, message, html) => {
+  if (!userId) return;
+  try {
+    const userRes = await pool.query('SELECT email FROM usuario WHERE id = $1', [userId]);
+    const userEmail = userRes.rows[0]?.email;
+    if (userEmail) {
+      emailService.sendEmail(userEmail, subject, message, html);
+    }
+  } catch (error) {
+    console.error('Erro ao buscar email do usuario para notificação:', error);
+  }
+};
 
 // Listar todos os lançamentos ativos
 const listar = async (req, res) => {
@@ -51,6 +66,13 @@ const criar = async (req, res) => {
       [descricao, data_lancamento, valor, tipo_lancamento]
     );
 
+    sendLancamentoEmail(
+      req.session.usuario.id,
+      'Lançamento registrado',
+      `Lançamento registrado: "${descricao}" - Valor: R$ ${valor}`,
+      templateCriacao(result.rows[0])
+    );
+
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Erro ao criar lançamento:', error);
@@ -68,6 +90,12 @@ const atualizar = async (req, res) => {
       return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
     }
 
+    const lancAntes = await pool.query("SELECT * FROM lancamento WHERE id = $1 AND situacao = 'ativo'", [id]);
+    if (lancAntes.rows.length === 0) {
+      return res.status(404).json({ error: 'Lançamento não encontrado' });
+    }
+    const antes = lancAntes.rows[0];
+
     const result = await pool.query(
       `UPDATE lancamento SET descricao = $1, data_lancamento = $2, valor = $3, tipo_lancamento = $4
        WHERE id = $5 AND situacao = 'ativo' RETURNING *`,
@@ -77,6 +105,13 @@ const atualizar = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Lançamento não encontrado' });
     }
+
+    sendLancamentoEmail(
+      req.session.usuario.id,
+      'Lançamento atualizado',
+      `Lançamento editado: "${descricao}" - Novo valor: R$ ${valor}`,
+      templateEdicao(antes, result.rows[0])
+    );
 
     res.json(result.rows[0]);
   } catch (error) {
@@ -98,6 +133,13 @@ const excluir = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Lançamento não encontrado' });
     }
+
+    sendLancamentoEmail(
+      req.session.usuario.id,
+      'Lançamento excluído',
+      `Lançamento excluído: "${result.rows[0].descricao}" - Valor: R$ ${result.rows[0].valor}`,
+      templateExclusao(result.rows[0])
+    );
 
     res.json({ message: 'Lançamento excluído com sucesso' });
   } catch (error) {

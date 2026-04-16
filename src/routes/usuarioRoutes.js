@@ -6,6 +6,7 @@ const authMiddleware = require('../middleware/auth');
 // Rotas públicas
 router.post('/login', usuarioController.login);
 router.post('/logout', usuarioController.logout);
+router.post('/register', usuarioController.criar);
 router.get('/sessao', usuarioController.verificarSessao);
 
 // Rotas protegidas

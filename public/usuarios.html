@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gerenciamento de Usuários do Sistema Financeiro">
+  <title>Financeiro | Usuários</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="dashboard-page">
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H11.5v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.65c.09 1.71 1.37 2.66 2.85 2.97V19h1.72v-1.67c1.52-.29 2.72-1.16 2.72-2.74 0-2.2-1.89-2.95-3.63-3.45z" fill="currentColor"/>
+        </svg>
+        <span>Financeiro</span>
+      </div>
+      <nav class="top-nav" style="display: flex; gap: 0.75rem; margin-left: 1.5rem;">
+        <a href="/dashboard" class="btn btn-export" style="text-decoration: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-right: 2px;">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" fill="currentColor"/>
+          </svg>
+          Lançamentos
+        </a>
+        <a href="/usuarios" class="btn btn-primary" style="text-decoration: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-right: 2px;">
+            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/>
+          </svg>
+          Usuários
+        </a>
+      </nav>
+    </div>
+    <div class="top-bar-right">
+      <div class="user-info" id="user-info">
+        <div class="user-avatar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+          </svg>
+        </div>
+        <span id="user-name">Usuário</span>
+      </div>
+      <button class="btn-icon" id="logout-btn" title="Sair">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content-full">
+    <!-- Usuários Table -->
+    <div class="table-container">
+      <div class="table-header">
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-right: 6px; color: var(--accent-primary);">
+            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/>
+          </svg>
+          Gerenciamento de Usuários
+        </h3>
+        <div class="table-header-actions">
+          <button class="btn btn-primary" id="btn-novo-usuario">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+            </svg>
+            Novo Usuário
+          </button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table class="data-table" id="usuarios-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Login</th>
+              <th>Email</th>
+              <th>Situação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="usuarios-table-body">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Usuário -->
+  <div class="modal-overlay" id="modal-usuario" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-usuario-title">Novo Usuário</h3>
+        <button class="modal-close" id="modal-usuario-close">&times;</button>
+      </div>
+      <form id="form-usuario" class="modal-form">
+        <input type="hidden" id="usuario-id">
+        <div class="form-group">
+          <label for="usuario-nome">Nome</label>
+          <input type="text" id="usuario-nome" placeholder="Nome completo" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="usuario-login">Login</label>
+            <input type="text" id="usuario-login" placeholder="Nome de usuário" required>
+          </div>
+          <div class="form-group">
+            <label for="usuario-email">Email</label>
+            <input type="email" id="usuario-email" placeholder="email@exemplo.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="usuario-senha" id="label-senha">Senha</label>
+          <input type="password" id="usuario-senha" placeholder="Mínimo 6 caracteres" minlength="6">
+          <span class="form-hint" id="senha-hint" style="display:none;">Deixe em branco para manter a senha atual</span>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="modal-usuario-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Confirmação -->
+  <div class="modal-overlay" id="modal-confirm" style="display:none;">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3>Confirmar Exclusão</h3>
+        <button class="modal-close" id="modal-confirm-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-message">Deseja realmente excluir este usuário?</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="confirm-cancel">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="confirm-ok">Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/usuarios.js"></script>
+</body>
+</html>
