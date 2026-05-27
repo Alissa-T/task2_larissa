@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  prod-db:
+    image: postgres:16-alpine
+    container_name: prod-db
+    environment:
+      POSTGRES_DB: financeiro_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - prod-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d financeiro_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  prod-flyway:
+    image: flyway/flyway:10.0.0
+    container_name: prod-flyway
+    command: -url=jdbc:postgresql://prod-db:5432/financeiro_db -user=postgres -password=postgres -connectRetries=60 migrate
+    volumes:
+      - ./db/migrations:/flyway/sql
+    depends_on:
+      prod-db:
+        condition: service_healthy
+
+  prod-app:
+    build: .
+    container_name: prod-app
+    ports:
+      - "3002:3000"
+    environment:
+      DB_HOST: prod-db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: financeiro_db
+      PORT: 3000
+      SESSION_SECRET: prod_secret_key_1129
+    depends_on:
+      prod-flyway:
+        condition: service_completed_successfully
+
+volumes:
+  prod-db-data:

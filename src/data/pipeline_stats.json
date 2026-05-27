@@ -1,0 +1,29 @@
+{
+  "totalTests": 20,
+  "passed": 20,
+  "failed": 0,
+  "duration": "5.05s",
+  "lastRun": "2026-05-27T17:48:27-03:00",
+  "tests": [
+    { "name": "1. templateCriacao deve retornar um HTML contendo as propriedades vitais", "status": "passed", "suite": "test_01_email_criacao.test.js" },
+    { "name": "2. templateExclusao deve retornar um HTML contendo as propriedades vitais", "status": "passed", "suite": "test_02_email_exclusao.test.js" },
+    { "name": "3. templateEdicao com mudanca de valor deve renderizar tabela antes/depois", "status": "passed", "suite": "test_03_email_edicao_mudanca.test.js" },
+    { "name": "4. templateEdicao sem mudanca nao deve mostrar campos inalterados", "status": "passed", "suite": "test_04_email_edicao_sem_mudanca.test.js" },
+    { "name": "5. emailService deve retornar false se credenciais do Gmail nao estiverem no .env", "status": "passed", "suite": "test_05_email_service_fallback.test.js" },
+    { "name": "6. POST /api/auth/register deve retornar 400 se login ja existir", "status": "passed", "suite": "test_06_usuario_cadastro_duplicado.test.js" },
+    { "name": "7. POST /api/auth/register deve salvar usuario com hash bcrypt e retornar 201", "status": "passed", "suite": "test_07_usuario_cadastro_sucesso.test.js" },
+    { "name": "8. POST /api/auth/login deve retornar 401 para usuario inexistente", "status": "passed", "suite": "test_08_usuario_login_inexistente.test.js" },
+    { "name": "9. POST /api/auth/login deve retornar 401 para senha incorreta", "status": "passed", "suite": "test_09_usuario_login_senha_errada.test.js" },
+    { "name": "10. POST /api/auth/login deve autenticar com sucesso e salvar na sessao", "status": "passed", "suite": "test_10_usuario_login_sucesso.test.js" },
+    { "name": "11. GET /api/lancamentos deve retornar lista vazia (200)", "status": "passed", "suite": "test_11_lancamento_listar_vazio.test.js" },
+    { "name": "12. GET /api/lancamentos deve retornar lancamentos ativos (200)", "status": "passed", "suite": "test_12_lancamento_listar_dados.test.js" },
+    { "name": "13. GET /api/lancamentos/:id deve retornar 404 para ID nao encontrado", "status": "passed", "suite": "test_13_lancamento_busca_404.test.js" },
+    { "name": "14. GET /api/lancamentos/:id deve retornar 200 para ID encontrado", "status": "passed", "suite": "test_14_lancamento_busca_200.test.js" },
+    { "name": "15. POST /api/lancamentos deve falhar (400) se faltarem campos obrigatorios", "status": "passed", "suite": "test_15_lancamento_criar_falha.test.js" },
+    { "name": "16. POST /api/lancamentos deve criar despesa com sucesso e enviar email em background", "status": "passed", "suite": "test_16_lancamento_criar_sucesso_email.test.js" },
+    { "name": "17. PUT /api/lancamentos/:id deve falhar se o tipo_lancamento for invalido", "status": "passed", "suite": "test_17_lancamento_atualizar_tipo_falha.test.js" },
+    { "name": "18. PUT /api/lancamentos/:id deve atualizar com sucesso e enviar email comparativo", "status": "passed", "suite": "test_18_lancamento_atualizar_sucesso_email.test.js" },
+    { "name": "19. DELETE /api/lancamentos/:id deve marcar como inativo (soft-delete) e enviar email", "status": "passed", "suite": "test_19_lancamento_exclusao_sucesso_email.test.js" },
+    { "name": "20. GET /api/lancamentos/resumo deve calcular receitas, despesas e saldo corretamente", "status": "passed", "suite": "test_20_lancamento_resumo_consolidado.test.js" }
+  ]
+}
