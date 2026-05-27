@@ -94,8 +94,8 @@ echo -e "\nStatus dos Containers:"
 sudo docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
 echo -e "\nURLs de acesso:"
-echo -e "- ${BLUE}Homologação:${CLEAR} http://localhost:3001"
-echo -e "- ${BLUE}Produção:${CLEAR}    http://localhost:3002"
+echo -e "- ${BLUE}Homologação:${CLEAR} http://177.44.248.108:3001"
+echo -e "- ${BLUE}Produção:${CLEAR}    http://177.44.248.108:3002"
 
 echo -e "\n${YELLOW}Instruções Importantes:${CLEAR}"
 echo -e "1. As permissões de grupo do Docker foram adicionadas para o usuário: ${GREEN}$USER${CLEAR}."
