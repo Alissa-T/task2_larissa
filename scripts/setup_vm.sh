@@ -44,7 +44,7 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plug
 
 # 3. Permissões do Docker para o usuário atual
 echo -e "\n${YELLOW}[3/6] Configurando permissões do Docker para o usuário...${CLEAR}"
-sudo usermod -aG docker $USER
+sudo usermod -aG docker $USER 2>/dev/null || echo -e "${YELLOW}Aviso: usermod não permitido pelo sudoers. Ignorando permissões de grupo.${CLEAR}"
 
 # 4. Clonagem do Repositório
 echo -e "\n${YELLOW}[4/6] Configurando diretório do projeto...${CLEAR}"
