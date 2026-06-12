@@ -396,8 +396,8 @@
           <div class="env-item">
             <div class="env-meta">
               <span class="env-name">Homologação</span>
-              <a href="http://localhost:3001" target="_blank" class="env-url" id="env-homolog-url">
-                http://localhost:3001
+              <a href="http://177.44.248.108:3001" target="_blank" class="env-url" id="env-homolog-url">
+                http://177.44.248.108:3001
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6m4-3h6v6m-11 5L21 3"/>
                 </svg>
@@ -413,8 +413,8 @@
           <div class="env-item">
             <div class="env-meta">
               <span class="env-name">Produção</span>
-              <a href="http://localhost:3002" target="_blank" class="env-url" id="env-prod-url">
-                http://localhost:3002
+              <a href="http://177.44.248.108:3002" target="_blank" class="env-url" id="env-prod-url">
+                http://177.44.248.108:3002
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6m4-3h6v6m-11 5L21 3"/>
                 </svg>
@@ -616,7 +616,12 @@
       const homolog = envs.homolog;
       const homologBadge = document.getElementById('env-homolog-badge');
       const homologText = document.getElementById('env-homolog-text');
-      
+      const homologUrl = document.getElementById('env-homolog-url');
+
+      if (homolog.url) {
+        homologUrl.href = homolog.url;
+        homologUrl.childNodes[0].textContent = homolog.url + ' ';
+      }
       if (homolog.status === 'ONLINE') {
         homologBadge.className = 'env-status-badge status-online';
         homologText.innerText = 'ONLINE';
@@ -629,7 +634,12 @@
       const prod = envs.prod;
       const prodBadge = document.getElementById('env-prod-badge');
       const prodText = document.getElementById('env-prod-text');
-      
+      const prodUrl = document.getElementById('env-prod-url');
+
+      if (prod.url) {
+        prodUrl.href = prod.url;
+        prodUrl.childNodes[0].textContent = prod.url + ' ';
+      }
       if (prod.status === 'ONLINE') {
         prodBadge.className = 'env-status-badge status-online';
         prodText.innerText = 'ONLINE';
