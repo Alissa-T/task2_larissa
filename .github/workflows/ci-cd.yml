@@ -39,20 +39,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup Flyway
-        uses: red-gate/setup-flyway@v3
-        with:
-          version: "10.0.0"
-          edition: "community"
-          i-agree-to-the-eula: true
-
-      - name: Run Flyway Migrations
+      - name: Setup Flyway e Executar Migrations
         run: |
-          flyway migrate \
+          wget -q https://github.com/flyway/flyway/releases/download/flyway-10.0.0/flyway-commandline-10.0.0-linux-x64.tar.gz \
+            -O /tmp/flyway.tar.gz
+          tar -xzf /tmp/flyway.tar.gz -C /opt
+          sudo ln -sf /opt/flyway-10.0.0/flyway /usr/local/bin/flyway
+          flyway \
             -url=jdbc:postgresql://localhost:5432/gerencia_test \
             -user=postgres \
             -password=postgres \
-            -locations=filesystem:db/migrations
+            -locations=filesystem:db/migrations \
+            migrate
 
       - name: Run Integration Tests
         run: npm test 2>&1 | tee test-results.txt
