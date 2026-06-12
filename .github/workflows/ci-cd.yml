@@ -29,7 +29,7 @@ jobs:
           --health-retries 5
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -79,6 +79,7 @@ jobs:
           name: test-results
           path: test-results.txt
           if-no-files-found: warn
+          overwrite: true
 
   deploy-homolog:
     name: Deploy to Homologation
@@ -87,7 +88,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Deploy Homologação
         run: |
@@ -107,7 +108,7 @@ jobs:
       url: http://177.44.248.108:3002
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Deploy Produção
         run: |
