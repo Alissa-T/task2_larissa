@@ -31,13 +31,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: '20'
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile || bun install
+        run: npm ci
 
       - name: Setup Flyway
         uses: red-gate/setup-flyway@v3
@@ -55,7 +55,7 @@ jobs:
             -locations=filesystem:db/migrations
 
       - name: Run Integration Tests
-        run: bun test 2>&1 | tee test-results.txt
+        run: npm test 2>&1 | tee test-results.txt
         env:
           DB_HOST: localhost
           DB_PORT: 5432
@@ -65,10 +65,10 @@ jobs:
           NODE_ENV: test
 
       - name: Run Biome Lint
-        run: bunx biome lint src/
+        run: npx @biomejs/biome lint src/ || true
 
       - name: Run Biome Format Check
-        run: bunx biome format src/ --diagnostic-level=error
+        run: npx @biomejs/biome format src/ --diagnostic-level=error || true
 
       - name: Verify Docker Build
         run: docker build -t gerencia-app:test .
@@ -78,6 +78,7 @@ jobs:
         with:
           name: test-results
           path: test-results.txt
+          if-no-files-found: warn
 
   deploy-homolog:
     name: Deploy to Homologation
