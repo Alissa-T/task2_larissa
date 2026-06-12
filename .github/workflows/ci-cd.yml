@@ -102,6 +102,9 @@ jobs:
     needs: ci
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: self-hosted
+    environment:
+      name: production
+      url: http://177.44.248.108:3002
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
