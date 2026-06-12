@@ -166,13 +166,13 @@ exports.getEnvStatus = async (req, res) => {
         name: 'Homologação',
         port: 3001,
         status: isHomologOnline ? 'ONLINE' : 'OFFLINE',
-        url: 'http://localhost:3001'
+        url: 'http://177.44.248.108:3001'
       },
       prod: {
         name: 'Produção',
         port: 3002,
         status: isProdOnline ? 'ONLINE' : 'OFFLINE',
-        url: 'http://localhost:3002'
+        url: 'http://177.44.248.108:3002'
       }
     },
     codeQuality: {
