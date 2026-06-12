@@ -39,17 +39,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup Flyway e Executar Migrations
+      - name: Run Flyway Migrations
         run: |
-          wget -q https://github.com/flyway/flyway/releases/download/flyway-10.0.0/flyway-commandline-10.0.0-linux-x64.tar.gz \
-            -O /tmp/flyway.tar.gz
-          tar -xzf /tmp/flyway.tar.gz -C /opt
-          sudo ln -sf /opt/flyway-10.0.0/flyway /usr/local/bin/flyway
-          flyway \
+          docker run --rm \
+            --network host \
+            -v $(pwd)/db/migrations:/flyway/sql \
+            flyway/flyway:10.0.0 \
             -url=jdbc:postgresql://localhost:5432/gerencia_test \
             -user=postgres \
             -password=postgres \
-            -locations=filesystem:db/migrations \
             migrate
 
       - name: Run Integration Tests
