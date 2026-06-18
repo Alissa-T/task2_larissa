@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagrama de Arquitetura - Financeiro App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      /* Fundo roxo pastel suave */
+      background: #eee6f8;
+      color: #2b1c4a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 20px;
+    }
+
+    h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #55348f;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 0.78rem;
+      color: #795d9e;
+      margin-bottom: 36px;
+    }
+
+    /* ── Layout Principal ── */
+    .diagram {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      max-width: 1300px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ── Card Base ── */
+    .card {
+      border-radius: 10px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-width: 130px;
+    }
+
+    .card-icon { font-size: 32px; }
+
+    .card-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #3b2766;
+    }
+
+    .card-sub {
+      font-size: 0.65rem;
+      color: #6a5391;
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    /* ── GitHub e Actions (Caixas roxo pastel um pouco mais escuro que o fundo) ── */
+    .github-card, .actions-card {
+      background: #e1d3f0;
+      border: 1px solid #c7b3dd;
+      box-shadow: 0 4px 12px rgba(100, 70, 150, 0.05);
+    }
+
+    .actions-card { min-width: 190px; }
+
+    .actions-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.62rem;
+      padding: 4px 8px;
+      border-radius: 5px;
+      background: #f4eeff;
+      color: #563e7c;
+      border: 1px solid #d5c8ea;
+    }
+
+    .step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .step-dot.green { background: #3fb950; }
+    .step-dot.blue { background: #58a6ff; }
+
+    /* ── Seta ── */
+    .arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .arrow-line {
+      width: 44px;
+      height: 0;
+      border-top: 1.5px solid #a78bfa;
+      position: relative;
+    }
+
+    .arrow-line::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: -4px;
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      border-left: 6px solid #a78bfa;
+    }
+
+    .arrow-label {
+      font-size: 0.52rem;
+      color: #795d9e;
+      font-weight: 600;
+    }
+
+    /* ── VM ── */
+    .vm-box {
+      background: #e1d3f0;
+      border: 1px solid #c7b3dd;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 580px;
+      box-shadow: 0 4px 12px rgba(100, 70, 150, 0.05);
+    }
+
+    .vm-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .vm-header-text {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #3b2766;
+    }
+
+    .vm-header-ip {
+      font-size: 0.62rem;
+      color: #63459c;
+      margin-left: auto;
+      background: #f4eeff;
+      border: 1px solid #d5c8ea;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* ── Docker ── */
+    .docker-zone {
+      border: 1px dashed #bba3d6;
+      border-radius: 10px;
+      padding: 14px;
+      background: #dad0ec;
+    }
+
+    .docker-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #55348f;
+    }
+
+    /* ── Ambientes lado a lado ── */
+    .envs-row {
+      display: flex;
+      gap: 14px;
+    }
+
+    .env-card {
+      flex: 1;
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Caixas de ambiente levemente mais escuras que a VM, mas ainda pastéis */
+    .env-homolog {
+      background: #d4c2ea;
+      border: 1px solid #bba3d6;
+    }
+
+    .env-prod {
+      background: #d4c2ea;
+      border: 1px solid #bba3d6;
+    }
+
+    .env-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(100, 70, 150, 0.1);
+    }
+
+    .env-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .env-badge.homolog {
+      background: #b1e5b9;
+      color: #1f6b2e;
+      border: 1px solid #99d6a3;
+    }
+
+    .env-badge.prod {
+      background: #fce3a2;
+      color: #8c6a15;
+      border: 1px solid #f0d07d;
+    }
+
+    .env-branch {
+      font-size: 0.58rem;
+      color: #6a5391;
+    }
+
+    .env-branch code {
+      background: #eee6f8;
+      border: 1px solid #c7b3dd;
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: #55348f;
+      font-size: 0.58rem;
+    }
+
+    /* ── Container ── */
+    .container-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: #f4eeff;
+      border: 1px solid #d5c8ea;
+      box-shadow: 0 1px 3px rgba(100, 70, 150, 0.05);
+    }
+
+    .container-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .container-icon.node { background: #b1e5b9; }
+    .container-icon.pg { background: #bedbfa; }
+    .container-icon.flyway { background: #fac2c2; }
+
+    .container-info { display: flex; flex-direction: column; gap: 1px; flex: 1; }
+    .container-name { font-size: 0.68rem; font-weight: 600; color: #3b2766; }
+    .container-tech { font-size: 0.55rem; color: #795d9e; }
+
+    .container-port {
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: #563e7c;
+      background: #e1d3f0;
+      border: 1px solid #c7b3dd;
+    }
+
+    .inner-arrow {
+      text-align: center;
+      color: #795d9e;
+      font-size: 0.6rem;
+      padding: 1px 0;
+    }
+
+    /* ── Tecnologias ── */
+    .techs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 28px;
+      max-width: 1300px;
+    }
+
+    .tech {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      background: #e1d3f0;
+      border: 1px solid #c7b3dd;
+      color: #4b3278;
+      box-shadow: 0 1px 2px rgba(100, 70, 150, 0.05);
+    }
+
+    .tech-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .d-node { background: #3fb950; }
+    .d-express { background: #c9a922; }
+    .d-pg { background: #5b93bd; }
+    .d-docker { background: #4ba3d4; }
+    .d-flyway { background: #b84040; }
+    .d-jest { background: #c05030; }
+    .d-biome { background: #7ab0e0; }
+    .d-gh { background: #8b6ec9; }
+    .d-ejs { background: #7fa030; }
+
+    @media (max-width: 1000px) {
+      .diagram { flex-direction: column; }
+      .arrow-line {
+        width: 0;
+        height: 30px;
+        border-top: none;
+        border-left: 1.5px solid #a78bfa;
+      }
+      .arrow-line::after {
+        right: auto; top: auto; bottom: -1px; left: -4px;
+        border-top: 6px solid #a78bfa;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: none;
+      }
+      .vm-box { min-width: unset; width: 100%; }
+      .envs-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Arquitetura CI/CD — Financeiro</h1>
+  <!-- <p class="subtitle">Pipeline de Integração Contínua e Deploy Automatizado</p> -->
+
+  <div class="diagram">
+
+    <!-- GitHub -->
+    <div class="card github-card">
+      <div class="card-icon">⬛</div>
+      <span class="card-label">GitHub</span>
+      <span class="card-sub">Repositório<br>Alissa-T/task2_larissa</span>
+    </div>
+
+    <div class="arrow">
+      <span class="arrow-label">webhook</span>
+      <div class="arrow-line"></div>
+      <span class="arrow-label">push / PR</span>
+    </div>
+
+    <!-- GitHub Actions -->
+    <div class="card actions-card">
+      <div class="card-icon">⚙️</div>
+      <span class="card-label">GitHub Actions</span>
+      <div class="actions-steps">
+        <div class="step"><span class="step-dot green"></span> Install Dependencies</div>
+        <div class="step"><span class="step-dot green"></span> Flyway Migrations</div>
+        <div class="step"><span class="step-dot green"></span> Jest — 20 Testes</div>
+        <div class="step"><span class="step-dot blue"></span> Biome Lint + Format</div>
+        <div class="step"><span class="step-dot blue"></span> Docker Build Verify</div>
+      </div>
+    </div>
+
+    <div class="arrow">
+      <span class="arrow-label">self-hosted</span>
+      <div class="arrow-line"></div>
+      <span class="arrow-label">runner</span>
+    </div>
+
+    <!-- VM -->
+    <div class="vm-box">
+      <div class="vm-header">
+        <span style="font-size: 18px;">🖥️</span>
+        <span class="vm-header-text">Ubuntu VM</span>
+        <span class="vm-header-ip">177.44.248.108</span>
+      </div>
+
+      <div class="docker-zone">
+        <div class="docker-header">🐳 Docker Compose</div>
+
+        <div class="envs-row">
+
+          <!-- Homologação -->
+          <div class="env-card env-homolog">
+            <div class="env-header">
+              <span class="env-badge homolog">Homologação</span>
+              <span class="env-branch">branch: <code>develop</code></span>
+            </div>
+            <div class="container-item">
+              <div class="container-icon node">🟢</div>
+              <div class="container-info">
+                <span class="container-name">homolog-app</span>
+                <span class="container-tech">Node.js 20 + Express + EJS</span>
+              </div>
+              <span class="container-port">:3001</span>
+            </div>
+            <div class="inner-arrow">↕</div>
+            <div class="container-item">
+              <div class="container-icon pg">🐘</div>
+              <div class="container-info">
+                <span class="container-name">homolog-db</span>
+                <span class="container-tech">PostgreSQL 16 Alpine</span>
+              </div>
+              <span class="container-port">:5433</span>
+            </div>
+            <div class="inner-arrow">↕</div>
+            <div class="container-item">
+              <div class="container-icon flyway">✈️</div>
+              <div class="container-info">
+                <span class="container-name">homolog-flyway</span>
+                <span class="container-tech">Flyway 10.0 — Migrations</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Produção -->
+          <div class="env-card env-prod">
+            <div class="env-header">
+              <span class="env-badge prod">Produção</span>
+              <span class="env-branch">branch: <code>main</code></span>
+            </div>
+            <div class="container-item">
+              <div class="container-icon node">🟢</div>
+              <div class="container-info">
+                <span class="container-name">prod-app</span>
+                <span class="container-tech">Node.js 20 + Express + EJS</span>
+              </div>
+              <span class="container-port">:3002</span>
+            </div>
+            <div class="inner-arrow">↕</div>
+            <div class="container-item">
+              <div class="container-icon pg">🐘</div>
+              <div class="container-info">
+                <span class="container-name">prod-db</span>
+                <span class="container-tech">PostgreSQL 16 Alpine</span>
+              </div>
+              <span class="container-port">:5434</span>
+            </div>
+            <div class="inner-arrow">↕</div>
+            <div class="container-item">
+              <div class="container-icon flyway">✈️</div>
+              <div class="container-info">
+                <span class="container-name">prod-flyway</span>
+                <span class="container-tech">Flyway 10.0 — Migrations</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tecnologias -->
+  <div class="techs">
+    <div class="tech"><span class="tech-dot d-node"></span> Node.js 20</div>
+    <div class="tech"><span class="tech-dot d-express"></span> Express 4</div>
+    <div class="tech"><span class="tech-dot d-ejs"></span> EJS</div>
+    <div class="tech"><span class="tech-dot d-pg"></span> PostgreSQL 16</div>
+    <div class="tech"><span class="tech-dot d-docker"></span> Docker Compose</div>
+    <div class="tech"><span class="tech-dot d-flyway"></span> Flyway 10</div>
+    <div class="tech"><span class="tech-dot d-jest"></span> Jest 30</div>
+    <div class="tech"><span class="tech-dot d-biome"></span> Biome</div>
+    <div class="tech"><span class="tech-dot d-gh"></span> GitHub Actions</div>
+  </div>
+
+</body>
+</html>
