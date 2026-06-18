@@ -39,20 +39,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup Flyway
-        uses: red-gate/setup-flyway@v3
-        with:
-          version: "10.0.0"
-          edition: "community"
-          i-agree-to-the-eula: true
-
       - name: Run Flyway Migrations
         run: |
-          flyway migrate \
+          docker run --rm \
+            --network host \
+            -v $(pwd)/db/migrations:/flyway/sql \
+            flyway/flyway:10.0.0 \
             -url=jdbc:postgresql://localhost:5432/gerencia_test \
             -user=postgres \
             -password=postgres \
-            -locations=filesystem:db/migrations
+            migrate
 
       - name: Run Integration Tests
         run: npm test 2>&1 | tee test-results.txt
@@ -93,7 +89,8 @@ jobs:
       - name: Deploy Homologação
         run: |
           cd ~/projeto
-          git pull origin develop
+          git fetch origin
+          git reset --hard origin/develop
           docker compose -f docker-compose.homolog.yml down --remove-orphans
           docker compose -f docker-compose.homolog.yml up -d --build
           echo "✅ Homologação atualizada — $(date)"
@@ -113,7 +110,8 @@ jobs:
       - name: Deploy Produção
         run: |
           cd ~/projeto
-          git pull origin main
+          git fetch origin
+          git reset --hard origin/main
           docker compose -f docker-compose.prod.yml down --remove-orphans
           docker compose -f docker-compose.prod.yml up -d --build
           echo "✅ Produção atualizada — $(date)"
