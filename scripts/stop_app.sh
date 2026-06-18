@@ -24,8 +24,8 @@ cd "$PROJECT_DIR" || { echo -e "${RED}Erro: pasta do projeto nao encontrada em $
 
 # ── Parar Homologacao ─────────────────────────────────────
 echo -e "${YELLOW}[1/2] Parando Homologacao (porta 3001)...${NC}"
-if docker compose -f docker-compose.homolog.yml ps --quiet 2>/dev/null | grep -q .; then
-    docker compose -f docker-compose.homolog.yml down --remove-orphans
+if docker compose -p homolog -f docker-compose.homolog.yml ps --quiet 2>/dev/null | grep -q .; then
+    docker compose -p homolog -f docker-compose.homolog.yml down --remove-orphans
     echo -e "${GREEN}      Homologacao parada com sucesso.${NC}"
 else
     echo -e "      Homologacao ja estava parada."
@@ -35,8 +35,8 @@ echo ""
 
 # ── Parar Producao ────────────────────────────────────────
 echo -e "${YELLOW}[2/2] Parando Producao (porta 3002)...${NC}"
-if docker compose -f docker-compose.prod.yml ps --quiet 2>/dev/null | grep -q .; then
-    docker compose -f docker-compose.prod.yml down --remove-orphans
+if docker compose -p prod -f docker-compose.prod.yml ps --quiet 2>/dev/null | grep -q .; then
+    docker compose -p prod -f docker-compose.prod.yml down --remove-orphans
     echo -e "${GREEN}      Producao parada com sucesso.${NC}"
 else
     echo -e "      Producao ja estava parada."
