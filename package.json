@@ -1,36 +1,36 @@
 {
-  "name": "financeiro-app",
-  "version": "1.0.0",
-  "description": "Aplicação de registro de despesas e receitas",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "seed": "node src/scripts/seed.js",
-    "test": "jest _tests_uni_ --detectOpenHandles --forceExit",
-    "test:uni": "jest _tests_uni_ --detectOpenHandles --forceExit"
-  },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.0",
-    "express-session": "^1.18.0",
-    "jspdf": "^4.2.1",
-    "jspdf-autotable": "^5.0.7",
-    "nodemailer": "^8.0.5",
-    "pdfkit": "^0.18.0",
-    "pg": "^8.13.0"
-  },
-  "keywords": [
-    "financeiro",
-    "despesas",
-    "receitas"
-  ],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "jest": "^30.3.0",
-    "supertest": "^7.2.2"
-  }
+	"name": "financeiro-app",
+	"version": "1.0.0",
+	"description": "Aplicação de registro de despesas e receitas",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js",
+		"dev": "node server.js",
+		"seed": "node src/scripts/seed.js",
+		"test": "jest _tests_uni_ --detectOpenHandles --forceExit",
+		"test:uni": "jest _tests_uni_ --detectOpenHandles --forceExit"
+	},
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"cors": "^2.8.5",
+		"dotenv": "^16.4.5",
+		"express": "^4.21.0",
+		"express-session": "^1.18.0",
+		"jspdf": "^4.2.1",
+		"jspdf-autotable": "^5.0.7",
+		"nodemailer": "^8.0.5",
+		"pdfkit": "^0.18.0",
+		"pg": "^8.13.0"
+	},
+	"keywords": [
+		"financeiro",
+		"despesas",
+		"receitas"
+	],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"jest": "^30.3.0",
+		"supertest": "^7.2.2"
+	}
 }
