@@ -1,114 +1,120 @@
 // Dashboard Page Logic — Lançamentos with Date Filter + PDF Export (Server-Side)
-document.addEventListener('DOMContentLoaded', async () => {
-  // Verificar sessão
-  try {
-    const sessao = await API.verificarSessao();
-    if (!sessao.logado) {
-      window.location.href = '/';
-      return;
-    }
-    document.getElementById('user-name').textContent = sessao.usuario.nome;
-  } catch (e) {
-    window.location.href = '/';
-    return;
-  }
+document.addEventListener("DOMContentLoaded", async () => {
+	// Verificar sessão
+	try {
+		const sessao = await API.verificarSessao();
+		if (!sessao.logado) {
+			window.location.href = "/";
+			return;
+		}
+		document.getElementById("user-name").textContent = sessao.usuario.nome;
+	} catch (_e) {
+		window.location.href = "/";
+		return;
+	}
 
-  // State
-  let lancamentos = [];
-  let confirmCallback = null;
+	// State
+	let lancamentos = [];
+	let confirmCallback = null;
 
-  const btnNovoLancamento = document.getElementById('btn-novo-lancamento');
-  const filterTipo = document.getElementById('filter-tipo');
-  const filterDataInicio = document.getElementById('filter-data-inicio');
-  const filterDataFim = document.getElementById('filter-data-fim');
-  const btnLimparDatas = document.getElementById('btn-limpar-datas');
-  const btnExportarTodosPdf = document.getElementById('btn-exportar-todos-pdf');
+	const btnNovoLancamento = document.getElementById("btn-novo-lancamento");
+	const filterTipo = document.getElementById("filter-tipo");
+	const filterDataInicio = document.getElementById("filter-data-inicio");
+	const filterDataFim = document.getElementById("filter-data-fim");
+	const btnLimparDatas = document.getElementById("btn-limpar-datas");
+	const btnExportarTodosPdf = document.getElementById("btn-exportar-todos-pdf");
 
-  // Logout
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    try {
-      await API.logout();
-    } catch (e) {}
-    window.location.href = '/';
-  });
+	// Logout
+	document.getElementById("logout-btn").addEventListener("click", async () => {
+		try {
+			await API.logout();
+		} catch (_e) {}
+		window.location.href = "/";
+	});
 
-  // ===== LOAD DATA =====
-  async function loadData() {
-    try {
-      const [resumo, data] = await Promise.all([
-        API.resumoFinanceiro(),
-        API.listarLancamentos(),
-      ]);
+	// ===== LOAD DATA =====
+	async function loadData() {
+		try {
+			const [resumo, data] = await Promise.all([
+				API.resumoFinanceiro(),
+				API.listarLancamentos(),
+			]);
 
-      lancamentos = data;
+			lancamentos = data;
 
-      document.getElementById('total-receitas').textContent = formatCurrency(resumo.total_receitas);
-      document.getElementById('total-despesas').textContent = formatCurrency(resumo.total_despesas);
-      document.getElementById('total-saldo').textContent = formatCurrency(resumo.saldo);
+			document.getElementById("total-receitas").textContent = formatCurrency(
+				resumo.total_receitas,
+			);
+			document.getElementById("total-despesas").textContent = formatCurrency(
+				resumo.total_despesas,
+			);
+			document.getElementById("total-saldo").textContent = formatCurrency(
+				resumo.saldo,
+			);
 
-      renderLancamentos();
-    } catch (error) {
-      showToast('Erro ao carregar dados', 'error');
-    }
-  }
+			renderLancamentos();
+		} catch (_error) {
+			showToast("Erro ao carregar dados", "error");
+		}
+	}
 
-  // ===== FILTROS =====
-  filterTipo.addEventListener('change', () => renderLancamentos());
-  filterDataInicio.addEventListener('change', () => renderLancamentos());
-  filterDataFim.addEventListener('change', () => renderLancamentos());
-  btnLimparDatas.addEventListener('click', () => {
-    filterDataInicio.value = '';
-    filterDataFim.value = '';
-    renderLancamentos();
-  });
+	// ===== FILTROS =====
+	filterTipo.addEventListener("change", () => renderLancamentos());
+	filterDataInicio.addEventListener("change", () => renderLancamentos());
+	filterDataFim.addEventListener("change", () => renderLancamentos());
+	btnLimparDatas.addEventListener("click", () => {
+		filterDataInicio.value = "";
+		filterDataFim.value = "";
+		renderLancamentos();
+	});
 
-  function getFilteredLancamentos() {
-    const filterType = filterTipo.value;
-    const dataInicio = filterDataInicio.value;
-    const dataFim = filterDataFim.value;
+	function getFilteredLancamentos() {
+		const filterType = filterTipo.value;
+		const dataInicio = filterDataInicio.value;
+		const dataFim = filterDataFim.value;
 
-    let filtered = lancamentos;
+		let filtered = lancamentos;
 
-    if (filterType) {
-      filtered = filtered.filter((l) => l.tipo_lancamento === filterType);
-    }
+		if (filterType) {
+			filtered = filtered.filter((l) => l.tipo_lancamento === filterType);
+		}
 
-    if (dataInicio) {
-      filtered = filtered.filter((l) => {
-        const dataLanc = l.data_lancamento.split('T')[0];
-        return dataLanc >= dataInicio;
-      });
-    }
+		if (dataInicio) {
+			filtered = filtered.filter((l) => {
+				const dataLanc = l.data_lancamento.split("T")[0];
+				return dataLanc >= dataInicio;
+			});
+		}
 
-    if (dataFim) {
-      filtered = filtered.filter((l) => {
-        const dataLanc = l.data_lancamento.split('T')[0];
-        return dataLanc <= dataFim;
-      });
-    }
+		if (dataFim) {
+			filtered = filtered.filter((l) => {
+				const dataLanc = l.data_lancamento.split("T")[0];
+				return dataLanc <= dataFim;
+			});
+		}
 
-    return filtered;
-  }
+		return filtered;
+	}
 
-  function renderLancamentos() {
-    const filtered = getFilteredLancamentos();
+	function renderLancamentos() {
+		const filtered = getFilteredLancamentos();
 
-    const tbody = document.getElementById('lancamentos-table-body');
-    tbody.innerHTML = '';
+		const tbody = document.getElementById("lancamentos-table-body");
+		tbody.innerHTML = "";
 
-    if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Nenhum lançamento encontrado</td></tr>`;
-      return;
-    }
+		if (filtered.length === 0) {
+			tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Nenhum lançamento encontrado</td></tr>`;
+			return;
+		}
 
-    filtered.forEach((l) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
+		filtered.forEach((l) => {
+			const tr = document.createElement("tr");
+			tr.innerHTML = `
         <td>#${l.id}</td>
         <td>${escapeHtml(l.descricao)}</td>
         <td>${formatDate(l.data_lancamento)}</td>
-        <td style="font-weight:600; color: ${l.tipo_lancamento === 'receita' ? 'var(--color-receita)' : 'var(--color-despesa)'}">
-          ${l.tipo_lancamento === 'despesa' ? '-' : '+'}${formatCurrency(l.valor)}
+        <td style="font-weight:600; color: ${l.tipo_lancamento === "receita" ? "var(--color-receita)" : "var(--color-despesa)"}">
+          ${l.tipo_lancamento === "despesa" ? "-" : "+"}${formatCurrency(l.valor)}
         </td>
         <td><span class="badge badge-${l.tipo_lancamento}">${l.tipo_lancamento}</span></td>
         <td>
@@ -131,223 +137,241 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         </td>
       `;
-      tbody.appendChild(tr);
-    });
-  }
+			tbody.appendChild(tr);
+		});
+	}
 
-  // ===== PDF EXPORT - Individual (chamada ao servidor) =====
-  window.exportPdfIndividual = async function (id) {
-    try {
-      const response = await fetch(`/api/lancamentos/exportar/${id}`, {
-        credentials: 'same-origin',
-      });
-      if (!response.ok) {
-        showToast('Erro ao gerar PDF', 'error');
-        return;
-      }
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `lancamento_${id}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast('PDF do lançamento exportado!', 'success');
-    } catch (error) {
-      showToast('Erro ao gerar PDF', 'error');
-    }
-  };
+	// ===== PDF EXPORT - Individual (chamada ao servidor) =====
+	window.exportPdfIndividual = async (id) => {
+		try {
+			const response = await fetch(`/api/lancamentos/exportar/${id}`, {
+				credentials: "same-origin",
+			});
+			if (!response.ok) {
+				showToast("Erro ao gerar PDF", "error");
+				return;
+			}
+			const blob = await response.blob();
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = `lancamento_${id}.pdf`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+			showToast("PDF do lançamento exportado!", "success");
+		} catch (_error) {
+			showToast("Erro ao gerar PDF", "error");
+		}
+	};
 
-  // ===== PDF EXPORT - Todos (chamada ao servidor) =====
-  btnExportarTodosPdf.addEventListener('click', async () => {
-    const filtered = getFilteredLancamentos();
-    if (filtered.length === 0) {
-      showToast('Nenhum lançamento para exportar', 'error');
-      return;
-    }
+	// ===== PDF EXPORT - Todos (chamada ao servidor) =====
+	btnExportarTodosPdf.addEventListener("click", async () => {
+		const filtered = getFilteredLancamentos();
+		if (filtered.length === 0) {
+			showToast("Nenhum lançamento para exportar", "error");
+			return;
+		}
 
-    // Construir a URL com os filtros aplicados
-    const params = new URLSearchParams();
-    const tipo = filterTipo.value;
-    const dataInicio = filterDataInicio.value;
-    const dataFim = filterDataFim.value;
+		// Construir a URL com os filtros aplicados
+		const params = new URLSearchParams();
+		const tipo = filterTipo.value;
+		const dataInicio = filterDataInicio.value;
+		const dataFim = filterDataFim.value;
 
-    if (tipo) params.append('tipo', tipo);
-    if (dataInicio) params.append('dataInicio', dataInicio);
-    if (dataFim) params.append('dataFim', dataFim);
+		if (tipo) params.append("tipo", tipo);
+		if (dataInicio) params.append("dataInicio", dataInicio);
+		if (dataFim) params.append("dataFim", dataFim);
 
-    const queryString = params.toString();
-    const url = `/api/lancamentos/exportar/todos${queryString ? '?' + queryString : ''}`;
+		const queryString = params.toString();
+		const url = `/api/lancamentos/exportar/todos${queryString ? `?${queryString}` : ""}`;
 
-    try {
-      const response = await fetch(url, {
-        credentials: 'same-origin',
-      });
-      if (!response.ok) {
-        showToast('Erro ao gerar PDF', 'error');
-        return;
-      }
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = 'lancamentos_financeiros.pdf';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
-      showToast('PDF de todos os lançamentos exportado!', 'success');
-    } catch (error) {
-      showToast('Erro ao gerar PDF', 'error');
-    }
-  });
+		try {
+			const response = await fetch(url, {
+				credentials: "same-origin",
+			});
+			if (!response.ok) {
+				showToast("Erro ao gerar PDF", "error");
+				return;
+			}
+			const blob = await response.blob();
+			const blobUrl = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = blobUrl;
+			a.download = "lancamentos_financeiros.pdf";
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(blobUrl);
+			showToast("PDF de todos os lançamentos exportado!", "success");
+		} catch (_error) {
+			showToast("Erro ao gerar PDF", "error");
+		}
+	});
 
-  // Novo Lançamento
-  btnNovoLancamento.addEventListener('click', () => openLancamentoModal());
+	// Novo Lançamento
+	btnNovoLancamento.addEventListener("click", () => openLancamentoModal());
 
-  function openLancamentoModal(lancamento = null) {
-    const modal = document.getElementById('modal-lancamento');
-    const title = document.getElementById('modal-lancamento-title');
-    const form = document.getElementById('form-lancamento');
+	function openLancamentoModal(lancamento = null) {
+		const modal = document.getElementById("modal-lancamento");
+		const title = document.getElementById("modal-lancamento-title");
+		const form = document.getElementById("form-lancamento");
 
-    form.reset();
-    document.getElementById('lancamento-id').value = '';
+		form.reset();
+		document.getElementById("lancamento-id").value = "";
 
-    if (lancamento) {
-      title.textContent = 'Editar Lançamento';
-      document.getElementById('lancamento-id').value = lancamento.id;
-      document.getElementById('lancamento-descricao').value = lancamento.descricao;
-      document.getElementById('lancamento-data').value = lancamento.data_lancamento.split('T')[0];
-      document.getElementById('lancamento-valor').value = lancamento.valor;
-      document.getElementById('lancamento-tipo').value = lancamento.tipo_lancamento;
-    } else {
-      title.textContent = 'Novo Lançamento';
-      document.getElementById('lancamento-data').value = new Date().toISOString().split('T')[0];
-    }
+		if (lancamento) {
+			title.textContent = "Editar Lançamento";
+			document.getElementById("lancamento-id").value = lancamento.id;
+			document.getElementById("lancamento-descricao").value =
+				lancamento.descricao;
+			document.getElementById("lancamento-data").value =
+				lancamento.data_lancamento.split("T")[0];
+			document.getElementById("lancamento-valor").value = lancamento.valor;
+			document.getElementById("lancamento-tipo").value =
+				lancamento.tipo_lancamento;
+		} else {
+			title.textContent = "Novo Lançamento";
+			document.getElementById("lancamento-data").value = new Date()
+				.toISOString()
+				.split("T")[0];
+		}
 
-    modal.style.display = 'flex';
-  }
+		modal.style.display = "flex";
+	}
 
-  // Global edit function
-  window.editLancamento = function (id) {
-    const l = lancamentos.find((item) => item.id === id);
-    if (l) openLancamentoModal(l);
-  };
+	// Global edit function
+	window.editLancamento = (id) => {
+		const l = lancamentos.find((item) => item.id === id);
+		if (l) openLancamentoModal(l);
+	};
 
-  // Global delete function
-  window.deleteLancamento = function (id, descricao) {
-    openConfirmModal(`Deseja excluir o lançamento "${descricao}"?`, async () => {
-      try {
-        await API.excluirLancamento(id);
-        showToast('Lançamento excluído com sucesso!', 'success');
-        loadData();
-      } catch (error) {
-        showToast(error.message, 'error');
-      }
-    });
-  };
+	// Global delete function
+	window.deleteLancamento = (id, descricao) => {
+		openConfirmModal(
+			`Deseja excluir o lançamento "${descricao}"?`,
+			async () => {
+				try {
+					await API.excluirLancamento(id);
+					showToast("Lançamento excluído com sucesso!", "success");
+					loadData();
+				} catch (error) {
+					showToast(error.message, "error");
+				}
+			},
+		);
+	};
 
-  // Save Lançamento
-  document.getElementById('form-lancamento').addEventListener('submit', async (e) => {
-    e.preventDefault();
+	// Save Lançamento
+	document
+		.getElementById("form-lancamento")
+		.addEventListener("submit", async (e) => {
+			e.preventDefault();
 
-    const id = document.getElementById('lancamento-id').value;
-    const dados = {
-      descricao: document.getElementById('lancamento-descricao').value,
-      data_lancamento: document.getElementById('lancamento-data').value,
-      valor: parseFloat(document.getElementById('lancamento-valor').value),
-      tipo_lancamento: document.getElementById('lancamento-tipo').value,
-    };
+			const id = document.getElementById("lancamento-id").value;
+			const dados = {
+				descricao: document.getElementById("lancamento-descricao").value,
+				data_lancamento: document.getElementById("lancamento-data").value,
+				valor: parseFloat(document.getElementById("lancamento-valor").value),
+				tipo_lancamento: document.getElementById("lancamento-tipo").value,
+			};
 
-    try {
-      if (id) {
-        await API.atualizarLancamento(id, dados);
-        showToast('Lançamento atualizado!', 'success');
-      } else {
-        await API.criarLancamento(dados);
-        showToast('Lançamento criado!', 'success');
-      }
+			try {
+				if (id) {
+					await API.atualizarLancamento(id, dados);
+					showToast("Lançamento atualizado!", "success");
+				} else {
+					await API.criarLancamento(dados);
+					showToast("Lançamento criado!", "success");
+				}
 
-      closeModal('modal-lancamento');
-      loadData();
-    } catch (error) {
-      showToast(error.message, 'error');
-    }
-  });
+				closeModal("modal-lancamento");
+				loadData();
+			} catch (error) {
+				showToast(error.message, "error");
+			}
+		});
 
-  // Modal close handlers
-  document.getElementById('modal-lancamento-close').addEventListener('click', () => closeModal('modal-lancamento'));
-  document.getElementById('modal-lancamento-cancel').addEventListener('click', () => closeModal('modal-lancamento'));
+	// Modal close handlers
+	document
+		.getElementById("modal-lancamento-close")
+		.addEventListener("click", () => closeModal("modal-lancamento"));
+	document
+		.getElementById("modal-lancamento-cancel")
+		.addEventListener("click", () => closeModal("modal-lancamento"));
 
-  // ===== CONFIRM MODAL =====
-  function openConfirmModal(message, callback) {
-    confirmCallback = callback;
-    document.getElementById('confirm-message').textContent = message;
-    document.getElementById('modal-confirm').style.display = 'flex';
-  }
+	// ===== CONFIRM MODAL =====
+	function openConfirmModal(message, callback) {
+		confirmCallback = callback;
+		document.getElementById("confirm-message").textContent = message;
+		document.getElementById("modal-confirm").style.display = "flex";
+	}
 
-  document.getElementById('confirm-ok').addEventListener('click', () => {
-    if (confirmCallback) confirmCallback();
-    closeModal('modal-confirm');
-  });
+	document.getElementById("confirm-ok").addEventListener("click", () => {
+		if (confirmCallback) confirmCallback();
+		closeModal("modal-confirm");
+	});
 
-  document.getElementById('confirm-cancel').addEventListener('click', () => closeModal('modal-confirm'));
-  document.getElementById('modal-confirm-close').addEventListener('click', () => closeModal('modal-confirm'));
+	document
+		.getElementById("confirm-cancel")
+		.addEventListener("click", () => closeModal("modal-confirm"));
+	document
+		.getElementById("modal-confirm-close")
+		.addEventListener("click", () => closeModal("modal-confirm"));
 
-  // ===== UTILITIES =====
-  function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-  }
+	// ===== UTILITIES =====
+	function closeModal(id) {
+		document.getElementById(id).style.display = "none";
+	}
 
-  function formatCurrency(value) {
-    return parseFloat(value).toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    });
-  }
+	function formatCurrency(value) {
+		return parseFloat(value).toLocaleString("pt-BR", {
+			style: "currency",
+			currency: "BRL",
+		});
+	}
 
-  function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-BR');
-  }
+	function formatDate(dateStr) {
+		const date = new Date(dateStr);
+		return date.toLocaleDateString("pt-BR");
+	}
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+	function escapeHtml(text) {
+		const div = document.createElement("div");
+		div.textContent = text;
+		return div.innerHTML;
+	}
 
-  function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
+	function showToast(message, type = "info") {
+		const container = document.getElementById("toast-container");
+		const toast = document.createElement("div");
+		toast.className = `toast toast-${type}`;
 
-    const icons = {
-      success: '✓',
-      error: '✕',
-      info: 'ℹ',
-    };
+		const icons = {
+			success: "✓",
+			error: "✕",
+			info: "ℹ",
+		};
 
-    toast.innerHTML = `<span>${icons[type] || ''}</span><span>${message}</span>`;
-    container.appendChild(toast);
+		toast.innerHTML = `<span>${icons[type] || ""}</span><span>${message}</span>`;
+		container.appendChild(toast);
 
-    setTimeout(() => {
-      toast.classList.add('toast-out');
-      setTimeout(() => toast.remove(), 300);
-    }, 3500);
-  }
+		setTimeout(() => {
+			toast.classList.add("toast-out");
+			setTimeout(() => toast.remove(), 300);
+		}, 3500);
+	}
 
-  // Close modals on overlay click
-  document.querySelectorAll('.modal-overlay').forEach((overlay) => {
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) {
-        overlay.style.display = 'none';
-      }
-    });
-  });
+	// Close modals on overlay click
+	document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+		overlay.addEventListener("click", (e) => {
+			if (e.target === overlay) {
+				overlay.style.display = "none";
+			}
+		});
+	});
 
-  // Initial load
-  loadData();
+	// Initial load
+	loadData();
 });

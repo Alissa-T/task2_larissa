@@ -61,10 +61,10 @@ jobs:
           NODE_ENV: test
 
       - name: Run Biome Lint
-        run: npx @biomejs/biome lint .
+        run: npx @biomejs/biome lint src/
 
       - name: Run Biome Format Check
-        run: npx @biomejs/biome format . --diagnostic-level=error
+        run: npx @biomejs/biome format src/ --diagnostic-level=error
 
       - name: Verify Docker Build
         run: docker build -t gerencia-app:test .
