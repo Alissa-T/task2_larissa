@@ -263,8 +263,8 @@
     }
 
     .pipeline-nav-active {
-      background: var(--accent-primary) !important;
-      color: white !important;
+      background: var(--accent-primary);
+      color: white;
     }
 
     /* Responsivo */
@@ -620,7 +620,7 @@
 
       if (homolog.url) {
         homologUrl.href = homolog.url;
-        homologUrl.childNodes[0].textContent = homolog.url + ' ';
+        homologUrl.childNodes[0].textContent = `${homolog.url} `;
       }
       if (homolog.status === 'ONLINE') {
         homologBadge.className = 'env-status-badge status-online';
@@ -638,7 +638,7 @@
 
       if (prod.url) {
         prodUrl.href = prod.url;
-        prodUrl.childNodes[0].textContent = prod.url + ' ';
+        prodUrl.childNodes[0].textContent = `${prod.url} `;
       }
       if (prod.status === 'ONLINE') {
         prodBadge.className = 'env-status-badge status-online';
@@ -698,7 +698,7 @@
     }
 
     // Gatilho do processo semi-automatizado de Deploy
-    function triggerDeploy(env) {
+    function _triggerDeploy(env) {
       showToast(`Executando atualização do ambiente de ${env === 'homolog' ? 'Homologação' : 'Produção'} na VM...`, 'info');
       const terminal = document.getElementById('terminal');
       

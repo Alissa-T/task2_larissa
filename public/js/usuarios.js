@@ -1,56 +1,56 @@
 // Usuarios Page Logic — CRUD de Usuários
-document.addEventListener('DOMContentLoaded', async () => {
-  // Verificar sessão
-  try {
-    const sessao = await API.verificarSessao();
-    if (!sessao.logado) {
-      window.location.href = '/';
-      return;
-    }
-    document.getElementById('user-name').textContent = sessao.usuario.nome;
-  } catch (e) {
-    window.location.href = '/';
-    return;
-  }
+document.addEventListener("DOMContentLoaded", async () => {
+	// Verificar sessão
+	try {
+		const sessao = await API.verificarSessao();
+		if (!sessao.logado) {
+			window.location.href = "/";
+			return;
+		}
+		document.getElementById("user-name").textContent = sessao.usuario.nome;
+	} catch (_e) {
+		window.location.href = "/";
+		return;
+	}
 
-  // State
-  let usuarios = [];
-  let confirmCallback = null;
+	// State
+	let usuarios = [];
+	let confirmCallback = null;
 
-  const btnNovoUsuario = document.getElementById('btn-novo-usuario');
+	const btnNovoUsuario = document.getElementById("btn-novo-usuario");
 
-  // Logout
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    try {
-      await API.logout();
-    } catch (e) {}
-    window.location.href = '/';
-  });
+	// Logout
+	document.getElementById("logout-btn").addEventListener("click", async () => {
+		try {
+			await API.logout();
+		} catch (_e) {}
+		window.location.href = "/";
+	});
 
-  // ===== LOAD DATA =====
-  async function loadData() {
-    try {
-      const data = await API.listarUsuarios();
-      usuarios = data;
-      renderUsuarios();
-    } catch (error) {
-      showToast('Erro ao carregar usuários', 'error');
-    }
-  }
+	// ===== LOAD DATA =====
+	async function loadData() {
+		try {
+			const data = await API.listarUsuarios();
+			usuarios = data;
+			renderUsuarios();
+		} catch (_error) {
+			showToast("Erro ao carregar usuários", "error");
+		}
+	}
 
-  // ===== RENDER =====
-  function renderUsuarios() {
-    const tbody = document.getElementById('usuarios-table-body');
-    tbody.innerHTML = '';
+	// ===== RENDER =====
+	function renderUsuarios() {
+		const tbody = document.getElementById("usuarios-table-body");
+		tbody.innerHTML = "";
 
-    if (usuarios.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Nenhum usuário cadastrado</td></tr>`;
-      return;
-    }
+		if (usuarios.length === 0) {
+			tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Nenhum usuário cadastrado</td></tr>`;
+			return;
+		}
 
-    usuarios.forEach((u) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
+		usuarios.forEach((u) => {
+			const tr = document.createElement("tr");
+			tr.innerHTML = `
         <td>#${u.id}</td>
         <td>
           <div class="user-cell">
@@ -80,159 +80,169 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         </td>
       `;
-      tbody.appendChild(tr);
-    });
-  }
+			tbody.appendChild(tr);
+		});
+	}
 
-  // ===== MODAL USUÁRIO =====
-  btnNovoUsuario.addEventListener('click', () => openUsuarioModal());
+	// ===== MODAL USUÁRIO =====
+	btnNovoUsuario.addEventListener("click", () => openUsuarioModal());
 
-  function openUsuarioModal(usuario = null) {
-    const modal = document.getElementById('modal-usuario');
-    const title = document.getElementById('modal-usuario-title');
-    const form = document.getElementById('form-usuario');
-    const senhaInput = document.getElementById('usuario-senha');
-    const senhaHint = document.getElementById('senha-hint');
+	function openUsuarioModal(usuario = null) {
+		const modal = document.getElementById("modal-usuario");
+		const title = document.getElementById("modal-usuario-title");
+		const form = document.getElementById("form-usuario");
+		const senhaInput = document.getElementById("usuario-senha");
+		const senhaHint = document.getElementById("senha-hint");
 
-    form.reset();
-    document.getElementById('usuario-id').value = '';
+		form.reset();
+		document.getElementById("usuario-id").value = "";
 
-    if (usuario) {
-      title.textContent = 'Editar Usuário';
-      document.getElementById('usuario-id').value = usuario.id;
-      document.getElementById('usuario-nome').value = usuario.nome;
-      document.getElementById('usuario-login').value = usuario.login;
-      document.getElementById('usuario-email').value = usuario.email || '';
-      senhaInput.required = false;
-      senhaInput.placeholder = 'Deixe em branco para manter';
-      senhaHint.style.display = 'block';
-    } else {
-      title.textContent = 'Novo Usuário';
-      senhaInput.required = true;
-      senhaInput.placeholder = 'Mínimo 6 caracteres';
-      senhaHint.style.display = 'none';
-    }
+		if (usuario) {
+			title.textContent = "Editar Usuário";
+			document.getElementById("usuario-id").value = usuario.id;
+			document.getElementById("usuario-nome").value = usuario.nome;
+			document.getElementById("usuario-login").value = usuario.login;
+			document.getElementById("usuario-email").value = usuario.email || "";
+			senhaInput.required = false;
+			senhaInput.placeholder = "Deixe em branco para manter";
+			senhaHint.style.display = "block";
+		} else {
+			title.textContent = "Novo Usuário";
+			senhaInput.required = true;
+			senhaInput.placeholder = "Mínimo 6 caracteres";
+			senhaHint.style.display = "none";
+		}
 
-    modal.style.display = 'flex';
-  }
+		modal.style.display = "flex";
+	}
 
-  // Global edit function
-  window.editUsuario = function (id) {
-    const u = usuarios.find((item) => item.id === id);
-    if (u) openUsuarioModal(u);
-  };
+	// Global edit function
+	window.editUsuario = (id) => {
+		const u = usuarios.find((item) => item.id === id);
+		if (u) openUsuarioModal(u);
+	};
 
-  // Global delete function
-  window.deleteUsuario = function (id, nome) {
-    openConfirmModal(`Deseja excluir o usuário "${nome}"?`, async () => {
-      try {
-        await API.excluirUsuario(id);
-        showToast('Usuário excluído com sucesso!', 'success');
-        loadData();
-      } catch (error) {
-        showToast(error.message, 'error');
-      }
-    });
-  };
+	// Global delete function
+	window.deleteUsuario = (id, nome) => {
+		openConfirmModal(`Deseja excluir o usuário "${nome}"?`, async () => {
+			try {
+				await API.excluirUsuario(id);
+				showToast("Usuário excluído com sucesso!", "success");
+				loadData();
+			} catch (error) {
+				showToast(error.message, "error");
+			}
+		});
+	};
 
-  // Save Usuário
-  document.getElementById('form-usuario').addEventListener('submit', async (e) => {
-    e.preventDefault();
+	// Save Usuário
+	document
+		.getElementById("form-usuario")
+		.addEventListener("submit", async (e) => {
+			e.preventDefault();
 
-    const id = document.getElementById('usuario-id').value;
-    const dados = {
-      nome: document.getElementById('usuario-nome').value,
-      login: document.getElementById('usuario-login').value,
-      email: document.getElementById('usuario-email').value,
-    };
+			const id = document.getElementById("usuario-id").value;
+			const dados = {
+				nome: document.getElementById("usuario-nome").value,
+				login: document.getElementById("usuario-login").value,
+				email: document.getElementById("usuario-email").value,
+			};
 
-    const senha = document.getElementById('usuario-senha').value;
-    if (senha) {
-      dados.senha = senha;
-    }
+			const senha = document.getElementById("usuario-senha").value;
+			if (senha) {
+				dados.senha = senha;
+			}
 
-    // Validação no criar: senha é obrigatória
-    if (!id && !senha) {
-      showToast('A senha é obrigatória para novos usuários', 'error');
-      return;
-    }
+			// Validação no criar: senha é obrigatória
+			if (!id && !senha) {
+				showToast("A senha é obrigatória para novos usuários", "error");
+				return;
+			}
 
-    try {
-      if (id) {
-        await API.atualizarUsuario(id, dados);
-        showToast('Usuário atualizado!', 'success');
-      } else {
-        await API.criarUsuario(dados);
-        showToast('Usuário criado!', 'success');
-      }
+			try {
+				if (id) {
+					await API.atualizarUsuario(id, dados);
+					showToast("Usuário atualizado!", "success");
+				} else {
+					await API.criarUsuario(dados);
+					showToast("Usuário criado!", "success");
+				}
 
-      closeModal('modal-usuario');
-      loadData();
-    } catch (error) {
-      showToast(error.message, 'error');
-    }
-  });
+				closeModal("modal-usuario");
+				loadData();
+			} catch (error) {
+				showToast(error.message, "error");
+			}
+		});
 
-  // Modal close handlers
-  document.getElementById('modal-usuario-close').addEventListener('click', () => closeModal('modal-usuario'));
-  document.getElementById('modal-usuario-cancel').addEventListener('click', () => closeModal('modal-usuario'));
+	// Modal close handlers
+	document
+		.getElementById("modal-usuario-close")
+		.addEventListener("click", () => closeModal("modal-usuario"));
+	document
+		.getElementById("modal-usuario-cancel")
+		.addEventListener("click", () => closeModal("modal-usuario"));
 
-  // ===== CONFIRM MODAL =====
-  function openConfirmModal(message, callback) {
-    confirmCallback = callback;
-    document.getElementById('confirm-message').textContent = message;
-    document.getElementById('modal-confirm').style.display = 'flex';
-  }
+	// ===== CONFIRM MODAL =====
+	function openConfirmModal(message, callback) {
+		confirmCallback = callback;
+		document.getElementById("confirm-message").textContent = message;
+		document.getElementById("modal-confirm").style.display = "flex";
+	}
 
-  document.getElementById('confirm-ok').addEventListener('click', () => {
-    if (confirmCallback) confirmCallback();
-    closeModal('modal-confirm');
-  });
+	document.getElementById("confirm-ok").addEventListener("click", () => {
+		if (confirmCallback) confirmCallback();
+		closeModal("modal-confirm");
+	});
 
-  document.getElementById('confirm-cancel').addEventListener('click', () => closeModal('modal-confirm'));
-  document.getElementById('modal-confirm-close').addEventListener('click', () => closeModal('modal-confirm'));
+	document
+		.getElementById("confirm-cancel")
+		.addEventListener("click", () => closeModal("modal-confirm"));
+	document
+		.getElementById("modal-confirm-close")
+		.addEventListener("click", () => closeModal("modal-confirm"));
 
-  // ===== UTILITIES =====
-  function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-  }
+	// ===== UTILITIES =====
+	function closeModal(id) {
+		document.getElementById(id).style.display = "none";
+	}
 
-  function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+	function escapeHtml(text) {
+		if (!text) return "";
+		const div = document.createElement("div");
+		div.textContent = text;
+		return div.innerHTML;
+	}
 
-  function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
+	function showToast(message, type = "info") {
+		const container = document.getElementById("toast-container");
+		const toast = document.createElement("div");
+		toast.className = `toast toast-${type}`;
 
-    const icons = {
-      success: '✓',
-      error: '✕',
-      info: 'ℹ',
-    };
+		const icons = {
+			success: "✓",
+			error: "✕",
+			info: "ℹ",
+		};
 
-    toast.innerHTML = `<span>${icons[type] || ''}</span><span>${message}</span>`;
-    container.appendChild(toast);
+		toast.innerHTML = `<span>${icons[type] || ""}</span><span>${message}</span>`;
+		container.appendChild(toast);
 
-    setTimeout(() => {
-      toast.classList.add('toast-out');
-      setTimeout(() => toast.remove(), 300);
-    }, 3500);
-  }
+		setTimeout(() => {
+			toast.classList.add("toast-out");
+			setTimeout(() => toast.remove(), 300);
+		}, 3500);
+	}
 
-  // Close modals on overlay click
-  document.querySelectorAll('.modal-overlay').forEach((overlay) => {
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) {
-        overlay.style.display = 'none';
-      }
-    });
-  });
+	// Close modals on overlay click
+	document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+		overlay.addEventListener("click", (e) => {
+			if (e.target === overlay) {
+				overlay.style.display = "none";
+			}
+		});
+	});
 
-  // Initial load
-  loadData();
+	// Initial load
+	loadData();
 });
