@@ -191,3 +191,22 @@ module.exports = {
 	logout,
 	verificarSessao,
 };
+
+class TesteLinter {
+  verificarUsuario(nome) {
+    // ERRO DE LINT 1: Uso do 'var' (Linter exige 'let' ou 'const')
+    var sobrenome = "Silva"; 
+
+
+    // ERRO DE LINT 2: Criar uma variável e nunca usar ela no código
+    const idade = 25; 
+
+
+    // ERRO DE LINT 3: Usar '==' ao invés de '===' (Linter exige validação estrita)
+    if (nome == "Larissa") {
+      return true;
+    }
+    
+    return false;
+  }
+}
