@@ -81,10 +81,10 @@ fi
 echo -e "\n${YELLOW}[6/6] Subindo ambientes via Docker Compose...${CLEAR}"
 
 echo -e "\n${BLUE}Subindo Homologação (Porta 3001)...${CLEAR}"
-sudo docker compose -f docker-compose.homolog.yml up -d --build
+sudo docker compose -p homolog -f docker-compose.homolog.yml up -d --build
 
 echo -e "\n${BLUE}Subindo Produção (Porta 3002)...${CLEAR}"
-sudo docker compose -f docker-compose.prod.yml up -d --build
+sudo docker compose -p prod -f docker-compose.prod.yml up -d --build
 
 # Resumo Final de Status
 echo -e "\n${GREEN}================================================================${CLEAR}"
