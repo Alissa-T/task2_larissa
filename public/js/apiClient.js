@@ -1,5 +1,5 @@
 // API helper module
-const _API = {
+const API = {
 	baseUrl: "",
 
 	async request(url, options = {}) {
