@@ -89,9 +89,10 @@ jobs:
       - name: Deploy Homologação
         run: |
           cd ~/projeto
-          git pull origin develop
-          docker compose -f docker-compose.homolog.yml down --remove-orphans
-          docker compose -f docker-compose.homolog.yml up -d --build
+          git fetch origin
+          git reset --hard origin/develop
+          docker compose -p homolog -f docker-compose.homolog.yml down --remove-orphans
+          docker compose -p homolog -f docker-compose.homolog.yml up -d --build
           echo "✅ Homologação atualizada — $(date)"
 
   deploy-prod:
@@ -109,7 +110,8 @@ jobs:
       - name: Deploy Produção
         run: |
           cd ~/projeto
-          git pull origin main
-          docker compose -f docker-compose.prod.yml down --remove-orphans
-          docker compose -f docker-compose.prod.yml up -d --build
+          git fetch origin
+          git reset --hard origin/main
+          docker compose -p prod -f docker-compose.prod.yml down --remove-orphans
+          docker compose -p prod -f docker-compose.prod.yml up -d --build
           echo "✅ Produção atualizada — $(date)"
