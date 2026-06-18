@@ -91,8 +91,8 @@ jobs:
           cd ~/projeto
           git fetch origin
           git reset --hard origin/develop
-          docker compose -f docker-compose.homolog.yml down --remove-orphans
-          docker compose -f docker-compose.homolog.yml up -d --build
+          docker compose -p homolog -f docker-compose.homolog.yml down --remove-orphans
+          docker compose -p homolog -f docker-compose.homolog.yml up -d --build
           echo "✅ Homologação atualizada — $(date)"
 
   deploy-prod:
@@ -112,6 +112,6 @@ jobs:
           cd ~/projeto
           git fetch origin
           git reset --hard origin/main
-          docker compose -f docker-compose.prod.yml down --remove-orphans
-          docker compose -f docker-compose.prod.yml up -d --build
+          docker compose -p prod -f docker-compose.prod.yml down --remove-orphans
+          docker compose -p prod -f docker-compose.prod.yml up -d --build
           echo "✅ Produção atualizada — $(date)"
