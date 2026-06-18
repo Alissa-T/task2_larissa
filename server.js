@@ -68,4 +68,12 @@ if (require.main === module) {
   });
 }
 
+// CLASSE QUEBRADA DE PROPÓSITO PARA TESTAR O CI
+class TesteErro {
+  constructor() {
+    this.nome = "Larissa";
+    
+    // Faltando propositalmente a chave de fechamento } do constructor!
+}
+
 module.exports = app;
