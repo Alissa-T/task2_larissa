@@ -6,7 +6,7 @@ const path = require("node:path");
 
 const lancamentoRoutes = require("./src/routes/lancamentoRoutes");
 const usuarioRoutes = require("./src/routes/usuarioRoutes");
-const pipelineRoutes = require("./src/routes/pipelineRoutes");
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/lancamentos", lancamentoRoutes);
 app.use("/api/auth", usuarioRoutes);
 app.use("/api/usuarios", usuarioRoutes);
-app.use("/api/pipeline", pipelineRoutes);
+
 
 // Rota principal
 app.get("/", (_req, res) => {
@@ -56,9 +56,7 @@ app.get("/usuarios", (_req, res) => {
 	res.sendFile(path.join(__dirname, "public", "usuarios.html"));
 });
 
-app.get("/pipeline", (_req, res) => {
-	res.sendFile(path.join(__dirname, "public", "pipeline.html"));
-});
+
 
 // Iniciar servidor somente se não for um teste
 if (require.main === module) {
