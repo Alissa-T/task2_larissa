@@ -190,5 +190,4 @@ module.exports = {
 	login,
 	logout,
 	verificarSessao,
-	
 };
