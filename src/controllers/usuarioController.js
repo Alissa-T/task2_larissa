@@ -190,4 +190,7 @@ module.exports = {
 	login,
 	logout,
 	verificarSessao,
+	
+	Errooo
+
 };
