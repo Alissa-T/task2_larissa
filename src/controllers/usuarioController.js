@@ -191,6 +191,4 @@ module.exports = {
 	logout,
 	verificarSessao,
 	
-	Errooo
-
 };
